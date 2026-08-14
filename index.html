@@ -53,6 +53,8 @@ h1,h2,h3{line-height:1.05;text-wrap:balance}
 .brand{display:flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--hand);font-size:1.5rem}
 .brand .mark{width:22px;height:22px}
 .brand b{color:var(--green-d)}
+.brand .wm{-webkit-text-stroke:1.1px var(--ink);text-shadow:1.5px 1.5px 0 var(--ink)}
+.brand .a{color:var(--green)} .brand .b{color:var(--pink)} .brand .c{color:var(--yellow)}
 .nav-links{display:flex;gap:22px;margin-left:auto;align-items:center}
 .nav-links a{font-weight:700;font-size:1rem;color:var(--ink);text-decoration:none;transition:color .15s}
 .nav-links a:hover{color:var(--pink-d)}
@@ -206,7 +208,7 @@ footer .brand{font-size:1.3rem}
 <nav class="nav">
   <div class="wrap">
     <div class="brand" onclick="goto('top')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goto('top')">
-      <span class="mark" id="brand-mark"></span> GIN<b>LUP</b>
+      <span class="mark" id="brand-mark"></span> <span class="wm"><span class="a">GIN</span><span class="b">L</span><span class="c">U</span><span class="a">P</span></span>
     </div>
     <div class="nav-links">
       <a href="#plugins" onclick="return goto('plugins')">Plugins</a>
@@ -221,7 +223,7 @@ footer .brand{font-size:1.3rem}
 
 <header class="hero" id="top">
   <div class="wrap">
-    <div class="cabinet-sign">✎ Handmade on a Mac · for macOS &amp; Windows</div>
+    <div class="cabinet-sign">✎ Plugins made fun!</div>
     <h1><span class="a">GIN</span><span class="b">L</span><span class="c">U</span><span class="a">P</span></h1>
     <div class="tagline" id="tagline">Two friends making plugins we actually want to use.</div>
     <div class="hero-cta">
@@ -320,7 +322,7 @@ footer .brand{font-size:1.3rem}
 
 <footer>
   <div class="wrap">
-    <div class="brand"><span class="mark" id="foot-mark"></span> GIN<b>LUP</b></div>
+    <div class="brand"><span class="mark" id="foot-mark"></span> <span class="wm"><span class="a">GIN</span><span class="b">L</span><span class="c">U</span><span class="a">P</span></span></div>
     <div>© <span id="year"></span> Ginlup · Funky plugins for macOS &amp; Windows · more coming soon…</div>
   </div>
 </footer>
