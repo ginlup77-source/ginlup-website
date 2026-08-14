@@ -651,7 +651,7 @@ document.getElementById('brand-mark').innerHTML=BRAND_MARK;
 document.getElementById('foot-mark').innerHTML=BRAND_MARK;
 
 /* tagline rotator */
-const TAGS=['Two friends making plugins we actually want to use.','Synths, mixing tools, and a few odd ones.','Made on a Mac, for Mac &amp; Windows.','Buy once, download, keep them for good.'];
+const TAGS=['Two friends making plugins we actually want to use.','Synths, mixing tools, and a few odd ones.','Made for both Mac and Windows.','Buy once, download, keep them for good.'];
 let ti=0;const tEl=document.getElementById('tagline');
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   setInterval(()=>{ti=(ti+1)%TAGS.length;tEl.style.opacity=0;setTimeout(()=>{tEl.innerHTML=TAGS[ti];tEl.style.opacity=1;},250);},3200);
