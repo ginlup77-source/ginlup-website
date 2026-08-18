@@ -676,12 +676,11 @@ renderGrid();renderTopBundle();refreshPrices();
 
 <style id="gw-css">
 .cab{z-index:1}
-.gp{position:absolute;z-index:0;width:84px;pointer-events:auto;cursor:pointer;-webkit-user-select:none;user-select:none;transition:left .5s cubic-bezier(.34,1.45,.5,1),top .5s cubic-bezier(.34,1.45,.5,1)}
-.gp img{display:block;width:100%;height:auto;pointer-events:none}
+.gp{position:absolute;z-index:2;overflow:hidden;pointer-events:auto;cursor:pointer;-webkit-user-select:none;user-select:none}
+.gp img{position:absolute;display:block;pointer-events:none;transition:left .5s cubic-bezier(.34,1.45,.5,1),top .5s cubic-bezier(.34,1.45,.5,1)}
 .gpb{position:absolute;z-index:80;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:14px 16px 15px 13px;padding:7px 11px;font-family:var(--hand);font-size:.95rem;width:max-content;max-width:min(300px,70vw);text-align:center;box-shadow:3px 3px 0 var(--ink);opacity:0;transition:opacity .3s;pointer-events:none;transform:translate(-50%,-100%)}
 .gpb:after{content:'';position:absolute;top:100%;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:var(--ink)}
 .gpb.show{opacity:1}
-@media(max-width:640px){.gp{width:62px}}
 @media(prefers-reduced-motion:reduce){.gp,.gpb{display:none}}
 </style>
 <script id="gw-js">
@@ -711,7 +710,7 @@ function mk(name){
   el.style.display='none';
   var bub=document.createElement('div');bub.className='gpb';
   (host||document.body).appendChild(el);(host||document.body).appendChild(bub);
-  var c={name:name,el:el,bub:bub,pid:null};
+  var c={name:name,el:el,img:el.querySelector('img'),bub:bub,pid:null};
   el.addEventListener('click',function(){if(c.pid&&typeof openPlugin==='function')openPlugin(c.pid)});
   return c;
 }
@@ -726,58 +725,62 @@ function schedule(c,ms){setTimeout(function(){pop(c)},ms||(3800+Math.random()*56
 function pop(c){
   var vis=cards();
   if(!vis.length){schedule(c,2600);return}
-  var all=[].slice.call(document.querySelectorAll('#cab-grid .cab')).map(function(el){return el.getBoundingClientRect()});
   var k=vis[Math.floor(Math.random()*vis.length)];
   var w=window.innerWidth<640?62:84;
   var charH=Math.round(w*2.74);
   var hr=host.getBoundingClientRect();
-  var imgEl=c.el.querySelector('img');
   var charTopV=k.r.bottom-charH-16;
-  function blocked(x0,x1){
-    for(var i=0;i<all.length;i++){var o=all[i];
-      if(Math.abs(o.left-k.r.left)<2&&Math.abs(o.top-k.r.top)<2)continue;
-      if(o.right>x0&&o.left<x1&&o.bottom>charTopV&&o.top<charTopV+charH*0.6)return true;}
-    return false;
-  }
   var minExp=Math.round(w*0.42), maxExp=Math.round(w*0.70);
+  // sides: characters render IN FRONT of neighbouring cards (clip-window trick),
+  // so only the viewport edge limits how far they can lean out
   var sides=[];
-  var expL=Math.min(maxExp,Math.round(k.r.left-8));
-  if(expL>=minExp&&!blocked(k.r.left-expL,k.r.left-2))sides.push({s:'left',e:expL});
-  var expR=Math.min(maxExp,Math.round(window.innerWidth-8-k.r.right));
-  if(expR>=minExp&&!blocked(k.r.right+2,k.r.right+expR))sides.push({s:'right',e:expR});
+  var expL=Math.min(maxExp,Math.round(k.r.left-6));
+  if(expL>=minExp)sides.push({s:'left',e:expL});
+  var expR=Math.min(maxExp,Math.round(window.innerWidth-6-k.r.right));
+  if(expR>=minExp)sides.push({s:'right',e:expR});
   var pick=sides.length?sides[Math.floor(Math.random()*sides.length)]:null;
-  var side=pick?pick.s:null, exposure=pick?pick.e:0;
-  var startL,endL,topPx,startT,endT;
-  if(side){
-    topPx=charTopV-hr.top;startT=endT=topPx;
-    if(side==='left'){startL=k.r.left-hr.left+10;endL=k.r.left-hr.left-exposure;}
-    else{startL=k.r.right-hr.left-w-10;endL=k.r.right-hr.left-w+exposure;}
-    imgEl.style.transform='rotate('+(side==='left'?-8:8)+'deg)'+(side==='right'?' scaleX(-1)':'');
+  var winL,winT,winW,winH,imgStart,imgEnd,axis;
+  if(pick){
+    axis='left';winW=pick.e;winH=charH;
+    winT=charTopV-hr.top;
+    if(pick.s==='left'){
+      winL=k.r.left-hr.left-pick.e;
+      imgStart=pick.e;imgEnd=0;
+      c.img.style.transform='rotate(-8deg)';
+    }else{
+      winL=k.r.right-hr.left;
+      imgStart=-w;imgEnd=pick.e-w;
+      c.img.style.transform='rotate(8deg) scaleX(-1)';
+    }
   }else{
+    if(k.r.top<235){schedule(c,1400);return}
+    axis='top';
     var lift=Math.round(w*1.15);
-    endT=(k.r.top-hr.top)-lift;startT=endT+lift+16;
-    startL=endL=(k.r.left-hr.left)+14+Math.random()*Math.max(30,k.r.width-w-28);
-    imgEl.style.transform=Math.random()<0.5?'scaleX(-1)':'none';
+    winW=w;winH=lift;
+    winL=(k.r.left-hr.left)+14+Math.random()*Math.max(30,k.r.width-w-28);
+    winT=(k.r.top-hr.top)-lift;
+    imgStart=lift;imgEnd=0;
+    c.img.style.transform=Math.random()<0.5?'scaleX(-1)':'none';
   }
-  if(!side&&k.r.top<235){schedule(c,1400);return}
   occupied[k.id]=1;c.pid=k.id;
-  c.el.style.left=startL+'px';
-  c.el.style.top=startT+'px';
+  c.img.style.width=w+'px';
+  c.img.style.left=axis==='left'?imgStart+'px':'0px';
+  c.img.style.top=axis==='top'?imgStart+'px':'0px';
+  c.el.style.left=winL+'px';c.el.style.top=winT+'px';
+  c.el.style.width=winW+'px';c.el.style.height=winH+'px';
   c.el.style.display='block';
   var tips=TIPS[k.id];
   c.bub.textContent=tips[Math.floor(Math.random()*tips.length)];
-  var bxv=Math.max(130,Math.min(window.innerWidth-130,hr.left+endL+w/2));
+  var bxv=Math.max(165,Math.min(window.innerWidth-165,hr.left+winL+winW/2));
   c.bub.style.left=(bxv-hr.left)+'px';
-  c.bub.style.top=(endT-8)+'px';
+  c.bub.style.top=(winT-8)+'px';
   setTimeout(function(){
-    c.el.style.left=endL+'px';
-    c.el.style.top=endT+'px';
+    c.img.style[axis]=imgEnd+'px';
     setTimeout(function(){c.bub.classList.add('show')},360);
   },40);
   setTimeout(function(){
     c.bub.classList.remove('show');
-    c.el.style.left=startL+'px';
-    c.el.style.top=startT+'px';
+    c.img.style[axis]=imgStart+'px';
     var pid=c.pid;
     setTimeout(function(){c.el.style.display='none';delete occupied[pid]},560);
     schedule(c);
