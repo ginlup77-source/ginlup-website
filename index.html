@@ -676,7 +676,7 @@ renderGrid();renderTopBundle();refreshPrices();
 
 <style id="gw-css">
 #gwx{position:fixed;left:0;right:0;bottom:0;height:0;z-index:70;pointer-events:none}
-.gw{position:fixed;bottom:4px;width:74px;pointer-events:auto;cursor:pointer;-webkit-user-select:none;user-select:none}
+.gw{position:fixed;bottom:2px;width:42px;pointer-events:auto;cursor:pointer;-webkit-user-select:none;user-select:none}
 .gw .gwi img{display:block;width:100%;height:auto;filter:drop-shadow(3px 4px 0 rgba(36,29,51,.16))}
 .gw.walking .gwi img{animation:gwstep .48s infinite alternate ease-in-out}
 @keyframes gwstep{from{transform:translateY(0) rotate(-1.8deg)}to{transform:translateY(-5px) rotate(1.8deg)}}
@@ -688,12 +688,12 @@ renderGrid();renderTopBundle();refreshPrices();
 @keyframes gwpulse{to{box-shadow:0 0 0 7px rgba(91,207,106,.55),6px 6px 0 var(--ink)}}
 .hero h1{position:relative}
 .hero h1 span{position:relative;z-index:2}
-.gwhead{position:absolute;z-index:1;width:88px;bottom:58%;pointer-events:none}
-#gwhead-a{left:3%;animation:gwpeekA 3.6s ease-in-out infinite alternate}
-#gwhead-e{right:2%;animation:gwpeekE 3.1s 1.1s ease-in-out infinite alternate}
-@keyframes gwpeekA{from{transform:translateY(14px) rotate(-8deg)}to{transform:translateY(4px) rotate(-4deg)}}
-@keyframes gwpeekE{from{transform:translateY(16px) rotate(7deg)}to{transform:translateY(5px) rotate(3deg)}}
-@media(max-width:640px){.gw{width:54px}.gwhead{width:58px;bottom:55%}}
+.gwhead{position:absolute;z-index:1;pointer-events:none}
+#gwhead-a{animation:gwpeekA 3.6s ease-in-out infinite alternate}
+#gwhead-e{animation:gwpeekE 3.1s 1.1s ease-in-out infinite alternate}
+@keyframes gwpeekA{from{transform:translateY(10px) rotate(-14deg)}to{transform:translateY(2px) rotate(-9deg)}}
+@keyframes gwpeekE{from{transform:translateY(12px) rotate(13deg)}to{transform:translateY(3px) rotate(8deg)}}
+@media(max-width:640px){.gw{width:30px}}
 @media(prefers-reduced-motion:reduce){.gw{display:none}.gwhead{animation:none}}
 </style>
 <script id="gw-js">
@@ -703,7 +703,19 @@ var IMGS={aw:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIEAAAFoCAYAAABwnJiu
 // heads peeking from behind the hero wordmark
 var h1=document.querySelector('.hero h1');
 if(h1){var ia=new Image();ia.src=IMGS.ah;ia.className='gwhead';ia.id='gwhead-a';ia.alt='';h1.appendChild(ia);
-var ie=new Image();ie.src=IMGS.eh;ie.className='gwhead';ie.id='gwhead-e';ie.alt='';h1.appendChild(ie);}
+var ie=new Image();ie.src=IMGS.eh;ie.className='gwhead';ie.id='gwhead-e';ie.alt='';h1.appendChild(ie);
+var placeHeads=function(){
+  var sp=h1.querySelectorAll('span');if(!sp.length)return;
+  var r1=sp[0].getBoundingClientRect(),r2=sp[sp.length-1].getBoundingClientRect(),rh=h1.getBoundingClientRect();
+  var w=Math.max(44,Math.min(90,r1.height*0.48));
+  ia.style.width=w+'px';
+  ia.style.left=(r1.left-rh.left-w*0.60)+'px';
+  ia.style.top=(r1.top-rh.top+r1.height*0.30)+'px';
+  ie.style.width=w+'px';
+  ie.style.left=(r2.right-rh.left-w*0.40)+'px';
+  ie.style.top=(r2.top-rh.top+r2.height*0.26)+'px';
+};
+placeHeads();window.addEventListener('resize',placeHeads);setTimeout(placeHeads,400);}
 // walkers
 var QUIPS={facemelter:'This one melts faces.','milky-way':'Fifty presets. One galaxy.','sidechain-brain':'Draw the pump. No routing.',brainpicker:'Careful. It gets ANGRY.',cloudify:'Clouds = reverb. That\u2019s it.','mona-lisa':'Red is distortion. Paint!','chorus-box':'I recruited a whole street.','solar-eclipse':'Slide the moon. Trust me.'};
 var SMALL={albin:['It\u2019s decent.','The drop is fine.','...huh.','I tested everything. Twice.','Fine. It\u2019s good.'],elvin:['Welcome to GINLUP!','Your drop needs this.','One zip. Mac AND Windows.','Five stars from Albin. RARE.','Click a plugin. Any plugin!']};
